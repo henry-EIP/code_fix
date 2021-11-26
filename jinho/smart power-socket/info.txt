@@ -1,0 +1,104 @@
+smart power-socket 대시보드 제작 (김상진 박사님 요청)
+* DB : intouch
+* Table : home_1_watt
+* 목적 : 시계열 데이터를 대시보드 형식, 그래프로 표현
+
+* server : Flask
+* 배포
+    - nohup python main.py 명령어로 배포 (아파치 사용하여 배포 시도 중 오류발생)
+    - port : 5999
+    - url : http://210.222.227.249:5999/
+
+
+# main.py
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/home/serching', methods=['GET', 'POST'])
+def home():
+- 페이지 초기 접속시 함수 실행
+- home.html 에서 start_date를 request로 보냄
+- start_date가 없으면 오늘 날짜를 start_date에 삽입 
+- data_conn.get_data(start_date)
+    - data_conn파일의 get_data함수에 start_date를 매개변수로 주고 데이터를 가져온다.
+    - house_1, daily1, house_2, daily2 4개의 변수에 가져온 데이터를 담는다. (type : python dict)
+
+return render_template('home.html',
+                        start_date = start_date,
+                        house_1 = house_1,
+                        daily1 = daily1,
+                        house_2 = house_2,
+                        daily2 = daily2)
+
+- home.html 페이지를 렌더링한다.
+- 페이지 렌더링시 전해줄 변수
+    - start_date : home.html에서 전해진 start_date 혹은 오늘 날짜
+    - house_1 : data_conn파일의 get_data함수에서 가져온 dict형태의 데이터
+    - house_2 : data_conn파일의 get_data함수에서 가져온 dict형태의 데이터
+    - daily1 : data_conn파일의 get_data함수에서 가져온 dict형태의 데이터
+    - daily2 : data_conn파일의 get_data함수에서 가져온 dict형태의 데이터
+
+@app.errorhandler(400)
+def error_400(error):
+- 400 에러페이지 핸들러, 서버에서 400에러 발생시 실행
+return render_template('400.html')
+- 400에러 페이지 랜더링
+
+@app.errorhandler(404)
+def error_404(error):
+- 404 에러페이지 핸들러, 서버에서 404에러 발생시 실행
+return render_template('404.html')
+- 404에러 페이지 랜더링
+
+@app.errorhandler(500)
+def error_500(error):
+- 500 에러페이지 핸들러, 서버에서 500에러 발생시 실행
+return render_template('500.html')
+-500에러 페이지 랜더링
+
+if __name__ == '__main__':    
+    app.run(host="0.0.0.0", port=5999, debug=False, threaded=True)
+- main.py 파일 실행시 시작지점
+- app을 실행
+    - host : 0.0.0.0 (호스트를 로컬호스트로 설정 : 210.222.227.249)
+    - port : 5999 (포트 : 5999)
+    - debug : False (디버그 모드를 사용하지 않음)
+    - threaded : True (쓰레드 기능 사용)
+
+# data_conn.py
+
+## 김상진 박사 알고리즘 ##
+def data_preprocessing_v1(data1):
+- DB에서 'house_1'의 데이터를 가져와 매개변수 data1으로 전달
+- pandas를 이용해 결측처리, 전처리
+return house_1
+- 전처리된 데이터를 return (type : pandas)
+
+def data_preprocessing_v2(data1):
+- DB에서 'house_2'의 데이터를 가져와 매개변수 data1으로 전달
+- pandas를 이용해 결측처리, 전처리
+return house_1
+- 전처리된 데이터를 return (type : pandas)
+
+def data_preprocessing_v1_2(data):
+- data_preprocessing_v1에서 전처리된 데이터를 매개변수로 받는다.
+- 가져온 데이터를 1시간 단위로 다시 전처리한다.
+return n_data
+- 전처리된 데이터를 return (type : pandas)
+
+def data_preprocessing_v2_2(data):
+- data_preprocessing_v2에서 전처리된 데이터를 매개변수로 받는다.
+- 가져온 데이터를 1시간 단위로 다시 전처리한다.
+return n_data
+- 전처리된 데이터를 return (type : pandas)
+
+## END ##
+def get_data(start_date):
+- data1 변수에 DB에서 start_date의 'house_name'이 'house_1'인 행만 가져온다.
+- data2 변수에 DB에서 start_date의 'house_name'이 'house_2'인 행만 가져온다.
+- house_1 변수에 data_preprocessing_v1에 data1을 매개변수로 전달한 return 값을 넣는다. 
+- house_2 변수에 data_preprocessing_v2에 data2을 매개변수로 전달한 return 값을 넣는다. 
+- daily1 변수에 data_preprocessing_v1_2에 house_1을 매개변수로 전달한 return 값을 넣는다.
+- daily2 변수에 data_preprocessing_v2_2에 house_2을 매개변수로 전달한 return 값을 넣는다.
+- house_1, daily1, house_2, daily2 타입을 dict로 변경
+return house_1, daily1, house_2, daily2
+- house_1, daily1, house_2, daily2 데이터를 return (type : dict)

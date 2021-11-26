@@ -1,0 +1,25 @@
+* DB : solar
+* Table
+    - PV_Predict_Data : 예측 모델을 크론탭을 사용해 실행, 1시간 단위 예측값을 테이블에 저장 (임실태양광 모델)
+    - PV_Real_Data : 태양광의 실제 발전량, 전력 정보를 저장하는 테이블(1분)
+    - PV_Sensor_Data : 기상센서에서 수집한 데이터를 저장하는 테이블(1분)
+    - p_weather_api : 기상청 API를 사용해 3시간 간격의 예측 데이터를 수집
+    - weather_api : 기상센서에서 수집하지 못하는 기상데이터를 기상청 API를 사용해 데이터 수집
+* 목적 : 시계열 데이터를 대시보드 형식, 그래프로 표현
+
+* server : Flask
+* 배포
+    - 아파치 사용하여 배포 (apache2 + wsgi + Flask)
+    - port : 4988
+    - url : http://210.222.227.249:4988/
+
+* SKY_VIEW http.server
+* 목적 : 이미지 주소를 http 형식을 사용해 대시보드에 표시
+* 설명 : 개발서버 파일에 저장되고 있는 이미지를 대시보드에 표시하기 위해 http프로토콜 사용
+* 배포
+    - python의 http.server 기능을 사용
+    - 실행 : python -m http.server 8100 (/home/tsetuser/skyimage 경로에서 실행)
+
+
+########## 사용 함수 정리 ############
+
